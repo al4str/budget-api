@@ -1,0 +1,7 @@
+.env
+.idea
+TODO.md
+node_modules
+temp
+dist
+db/*.json
