@@ -15,3 +15,10 @@ export function datesValidate(rawDate) {
     return false;
   }
 }
+
+/**
+ * @return {number}
+ * */
+export function datesUTCGetTimestamp() {
+  return new Date(new Date().toUTCString()).getTime();
+}

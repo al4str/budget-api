@@ -1,6 +1,7 @@
 import path from 'path';
 import { JsonDB as DB } from 'node-json-db';
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
+import { datesUTCGetTimestamp } from '@/libs/dates';
 import { DIR_DB, DB_NAME } from '@/constants';
 
 /** @type {import('node-json-db').JsonDB} */
@@ -14,13 +15,13 @@ export const DB_NAMES = {
   CATEGORIES: 'CATEGORIES',
   COMMODITIES: 'COMMODITIES',
   INCOME: 'INCOME',
-  COSTS: 'COSTS',
+  EXPENSES: 'EXPENSES',
   EXPENDITURES: 'EXPENDITURES',
 };
 
 /**
  * @typedef {'USERS'|'SESSIONS'|'CATEGORIES'
- * |'COMMODITIES'|'INCOME'|'COSTS'|'EXPENDITURES'} DBName
+ * |'COMMODITIES'|'INCOME'|'EXPENSES'|'EXPENDITURES'} DBName
  * */
 
 /**
@@ -71,13 +72,6 @@ function validateUser(userId) {
   if (!user) {
     throw new Error('DB: Invalid input "userId"');
   }
-}
-
-/**
- * @return {number}
- * */
-function getDate() {
-  return new Date(new Date().toUTCString()).getTime();
 }
 
 /**
@@ -160,7 +154,7 @@ export function dbCreate(params) {
       deleted: false,
       metaCreate: {
         userId,
-        date: getDate(),
+        date: datesUTCGetTimestamp(),
       },
       metaUpdate: {
         userId: '',
@@ -192,7 +186,7 @@ export function dbUpdate(params) {
   const nextItem = updater(prevItem);
   nextItem.meta.metaUpdate = {
     userId,
-    date: getDate(),
+    date: datesUTCGetTimestamp(),
   };
   INSTANCE.push(`/${name}/${id}`, nextItem);
   return nextItem;
@@ -218,7 +212,7 @@ export function dbDelete(params) {
       deleted: true,
       metaDelete: {
         userId,
-        date: getDate(),
+        date: datesUTCGetTimestamp(),
       },
     },
   };

@@ -10,6 +10,8 @@ import { usersRouter } from '@/middlewares/users';
 import { categoriesRouter } from '@/middlewares/categories';
 import { commoditiesRouter } from '@/middlewares/commodities';
 import { incomeRouter } from '@/middlewares/income';
+import { expensesRouter } from '@/middlewares/expenses';
+import { expendituresRouter } from '@/middlewares/expenditures';
 
 const host = '0.0.0.0';
 const port = 3000;
@@ -40,6 +42,8 @@ usersRouter(app);
 categoriesRouter(app);
 commoditiesRouter(app);
 incomeRouter(app);
+expensesRouter(app);
+expendituresRouter(app);
 
 (async function() {
   await scaffold();
