@@ -1,3 +1,4 @@
+import { ERRORS } from '@/helpers/errors';
 import { usersItem } from '@/helpers/users';
 import {
   sessionsGetTokenByUserId,
@@ -26,7 +27,7 @@ export async function sessionsGetToken(params) {
   if (!userResult.ok) {
     return {
       ok: false,
-      reason: 'Unknown user',
+      reason: ERRORS.sessionUnknownUser,
       data: '',
     };
   }
@@ -34,7 +35,7 @@ export async function sessionsGetToken(params) {
   if (user.pin !== userPIN) {
     return {
       ok: false,
-      reason: 'Wrong user',
+      reason: ERRORS.sessionWrongUser,
       data: '',
     };
   }
@@ -43,7 +44,7 @@ export async function sessionsGetToken(params) {
     user: {
       id: userId,
       name: user.name,
-      avatarURL: user.avatarURL,
+      avatarId: user.avatarId,
     },
     secret: user.pin.toString(),
   });
@@ -77,7 +78,7 @@ export async function sessionsGetUser(params) {
   if (!jwtUser.ok) {
     return {
       ok: false,
-      reason: 'Unknown token',
+      reason: ERRORS.sessionUnknownToken,
       data: null,
     };
   }
@@ -86,7 +87,7 @@ export async function sessionsGetUser(params) {
   if (token !== existingToken) {
     return {
       ok: false,
-      reason: 'Wrong session',
+      reason: ERRORS.sessionWrongSession,
       data: null,
     };
   }
@@ -94,7 +95,7 @@ export async function sessionsGetUser(params) {
   if (!userResult.ok) {
     return {
       ok: false,
-      reason: 'Unknown user',
+      reason: ERRORS.sessionUnknownUser,
       data: null,
     };
   }
@@ -117,7 +118,7 @@ export async function sessionsGetUser(params) {
     data: {
       id: userId,
       name: user.name,
-      avatarURL: user.avatarURL,
+      avatarId: user.avatarId,
       pin: user.pin,
     },
   };

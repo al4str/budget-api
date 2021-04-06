@@ -3,14 +3,14 @@ import { DB_SEED_USER_ID, dbCreate } from '@/libs/db';
 export const SEEDS_USERS_AL4STR = {
   id: 'al4str',
   name: 'Нянто',
-  avatarURL: '',
+  avatarId: '',
   pin: 1234,
 };
 
 export const SEEDS_USERS_NAVA = {
   id: 'nava',
   name: 'Лися',
-  avatarURL: '',
+  avatarId: '',
   pin: 4321,
 };
 
@@ -26,7 +26,7 @@ export function seedsUsersPlant() {
       id: item.id,
       data: {
         name: item.name,
-        avatarURL: item.avatarURL,
+        avatarId: item.avatarId,
         pin: item.pin,
       },
       userId: DB_SEED_USER_ID,

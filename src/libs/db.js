@@ -3,8 +3,13 @@ import { JsonDB as DB } from 'node-json-db';
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
 import { datesUTCGetTimestamp } from '@/libs/dates';
 import { DIR_DB, DB_NAME } from '@/constants';
+import { ERRORS } from '@/helpers/errors';
 
-/** @type {import('node-json-db').JsonDB} */
+/**
+ * @typedef {import('node-json-db').JsonDB} DBInstance
+ * */
+
+/** @type {DBInstance} */
 let INSTANCE = null;
 
 export const DB_SEED_USER_ID = 'SEED';
@@ -56,7 +61,7 @@ export const DB_NAMES = {
  * */
 function validateName(name) {
   if (!(name in DB_NAMES)) {
-    throw new Error('DB: Invalid input "name"');
+    throw new Error(ERRORS.dbInvalidName);
   }
 }
 
@@ -70,7 +75,7 @@ function validateUser(userId) {
   }
   const user = INSTANCE.getData(`/${DB_NAMES.USERS}/${userId}`);
   if (!user) {
-    throw new Error('DB: Invalid input "userId"');
+    throw new Error(ERRORS.dbInvalidUser);
   }
 }
 
@@ -92,7 +97,7 @@ export function dbInit() {
 export function dbSelect(params) {
   const { selector } = params;
   if (typeof selector !== 'function') {
-    throw new Error('DB: "selector" is not a function');
+    throw new Error(ERRORS.dbInvalidSelector);
   }
   const root = INSTANCE.getData('/');
   return selector(root);

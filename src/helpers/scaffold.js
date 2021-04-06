@@ -1,6 +1,12 @@
 import path from 'path';
 import fs from 'fs/promises';
-import { DIR_TEMP, DIR_DB, DB_NAME } from '@/constants';
+import {
+  DIR_TEMP,
+  DIR_DB,
+  DIR_UPLOADS,
+  DIR_AVATARS,
+  DB_NAME,
+} from '@/constants';
 import { dbInit } from '@/libs/db';
 import { seedsPlant } from '@/seeds';
 
@@ -19,6 +25,18 @@ export async function scaffold() {
   }
   catch (err) {
     await fs.mkdir(DIR_DB);
+  }
+  try {
+    await fs.stat(DIR_UPLOADS);
+  }
+  catch (err) {
+    await fs.mkdir(DIR_UPLOADS);
+  }
+  try {
+    await fs.stat(DIR_AVATARS);
+  }
+  catch (err) {
+    await fs.mkdir(DIR_AVATARS);
   }
   const dbPath = path.join(DIR_DB, DB_NAME);
   try {

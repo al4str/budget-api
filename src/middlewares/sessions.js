@@ -14,10 +14,12 @@ export function sessionsMiddleware() {
     const token = req.get('X-Token');
     if (!token) {
       res.sendStatus(403);
+      return;
     }
     const result = await sessionsGetUser({ token });
     if (!result.ok) {
       res.sendStatus(403);
+      return;
     }
     req.user = result.data;
     next();
@@ -35,5 +37,19 @@ export function sessionsRouter(app) {
       userPIN,
     });
     res.json(result);
+  });
+
+  app.post('/sessions/validate', async (req, res) => {
+    const token = req.body.token;
+    if (!token) {
+      res.sendStatus(400);
+      return;
+    }
+    const result = await sessionsGetUser({ token });
+    if (!result.ok) {
+      res.sendStatus(403);
+      return;
+    }
+    res.sendStatus(200);
   });
 }

@@ -1,35 +1,14 @@
-import { sessionsMiddleware } from '@/middlewares/sessions';
-import {
-  incomeGetItem,
-  incomeGetList,
-  incomeCreateItem,
-  incomeUpdateItem,
-  incomeDeleteItem,
-} from '@/controllers/income';
+import { resourceRouterCreate } from '@/helpers/resourceRouter';
+import { resourceControllerCreate } from '@/helpers/resourceController';
+import { incomeOperations } from '@/helpers/income';
 
-export function incomeRouter(app) {
-  app.post('/income', sessionsMiddleware(), async (req, res) => {
-    const result = await incomeCreateItem(req.body, req.user);
-    res.json(result);
-  });
+const controller = resourceControllerCreate({
+  operations: incomeOperations,
+})
 
-  app.get('/income', sessionsMiddleware(), async (req, res) => {
-    const result = await incomeGetList();
-    res.json(result);
-  });
+const router = resourceRouterCreate({
+  resource: 'INCOME',
+  controller,
+});
 
-  app.get('/income/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await incomeGetItem(req.params.id);
-    res.json(result);
-  });
-
-  app.patch('/income/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await incomeUpdateItem(req.params.id, req.body, req.user);
-    res.json(result);
-  });
-
-  app.delete('/income/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await incomeDeleteItem(req.params.id, req.user);
-    res.json(result);
-  });
-}
+export const incomeRouter = router;

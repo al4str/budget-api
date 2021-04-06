@@ -1,11 +1,6 @@
-import {
-  dbDoesItemExist,
-  dbGetItems,
-  dbGetItem,
-  dbCreate,
-  dbUpdate,
-  dbDelete,
-} from '@/libs/db';
+import { ERRORS } from '@/helpers/errors';
+import { resourceOperationsCreate } from '@/helpers/resourceOperations';
+import { categoriesExists } from '@/helpers/categories';
 
 /**
  * @typedef {Object} CommodityItem
@@ -20,221 +15,90 @@ import {
  * @property {string} categoryId
  * */
 
+const basicOperations = resourceOperationsCreate('COMMODITIES');
+
+export const commoditiesExists = basicOperations.exist;
+
 /**
  * @param {string} id
- * @return {Promise<boolean>}
+ * @param {CommodityItem} data
+ * @return {CommodityItemPublic}
  * */
-export async function commoditiesExists(id) {
-  try {
-    return dbDoesItemExist({
-      name: 'COMMODITIES',
-      id,
-    });
+function publicMapper(id, data) {
+  return {
+    id,
+    title: data.title,
+    categoryId: data.categoryId,
+  };
+}
+
+/**
+ * @param {Object} payload
+ * @param {string} payload.title
+ * @param {string} payload.categoryId
+ * @return {Promise<{
+ *   ok: boolean
+ *   reason: null|Error
+ * }>}
+ * */
+async function createValidator(payload) {
+  const {
+    title,
+    categoryId,
+  } = payload;
+  if (!title) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.commoditiesInvalidTitle),
+    };
   }
-  catch (err) {
-    return false;
+  if (!await categoriesExists(categoryId)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.commoditiesInvalidCategory),
+    };
+  }
+  return {
+    ok: true,
+    reason: null,
   }
 }
 
 /**
- * @param {Object} params
- * @param {string} params.id
+ * @param {Object} payload
+ * @param {string} payload.title
+ * @param {string} payload.categoryId
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
- *   data: null|CommodityItem
  * }>}
  * */
-export async function commoditiesItem(params) {
-  try {
-    const { id } = params;
-    const item = dbGetItem({
-      name: 'COMMODITIES',
-      id,
-    });
-
-    if (!item || item.meta.deleted) {
-      return {
-        ok: false,
-        reason: new Error('Does not exist'),
-        data: null,
-      };
-    }
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
+async function updateValidator(payload) {
+  const {
+    title,
+    categoryId,
+  } = payload;
+  if (typeof title !== 'undefined' && !title) {
     return {
       ok: false,
-      reason: err,
-      data: null,
+      reason: new Error(ERRORS.commoditiesInvalidTitle),
     };
+  }
+  if (typeof categoryId !== 'undefined' && !await categoriesExists(categoryId)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.commoditiesInvalidCategory),
+    };
+  }
+  return {
+    ok: true,
+    reason: null,
   }
 }
 
-/**
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: Array<CommodityItemPublic>
- * }>}
- * */
-export async function commoditiesList() {
-  try {
-    const items = dbGetItems({
-      name: 'COMMODITIES',
-    });
-    const list = items
-      .filter((item) => !item.meta.deleted)
-      .map((item) => {
-        /** @type {CommodityItem} */
-        const data = item.data;
-
-        return {
-          ...data,
-          id: item.id,
-        };
-      })
-
-    return {
-      ok: true,
-      reason: null,
-      data: list,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: [],
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {CommodityItem} params.payload
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|CommodityItem
- * }>}
- * */
-export async function commoditiesCreate(params) {
-  try {
-    const {
-      id,
-      payload,
-      byUserId,
-    } = params;
-    const item = dbCreate({
-      name: 'COMMODITIES',
-      id,
-      data: payload,
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {Partial<CommodityItem>} params.payload
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|CommodityItem
- * }>}
- * */
-export async function commoditiesUpdate(params) {
-  try {
-    const {
-      id,
-      payload,
-      byUserId,
-    } = params;
-    const item = dbUpdate({
-      name: 'COMMODITIES',
-      id,
-      updater(prevItem) {
-        return {
-          ...prevItem,
-          data: {
-            ...prevItem.data,
-            ...payload,
-          },
-        };
-      },
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|CommodityItem
- * }>}
- * */
-export async function commoditiesDelete(params) {
-  try {
-    const {
-      id,
-      byUserId,
-    } = params;
-    const item = dbDelete({
-      name: 'COMMODITIES',
-      id,
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
+export const commoditiesOperations = {
+  ...basicOperations,
+  publicMapper,
+  createValidator,
+  updateValidator,
+};

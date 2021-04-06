@@ -1,35 +1,14 @@
-import { sessionsMiddleware } from '@/middlewares/sessions';
-import {
-  categoriesGetItem,
-  categoriesGetList,
-  categoriesCreateItem,
-  categoriesUpdateItem,
-  categoriesDeleteItem,
-} from '@/controllers/categories';
+import { resourceRouterCreate } from '@/helpers/resourceRouter';
+import { resourceControllerCreate } from '@/helpers/resourceController';
+import { categoriesOperations } from '@/helpers/categories';
 
-export function categoriesRouter(app) {
-  app.post('/categories', sessionsMiddleware(), async (req, res) => {
-    const result = await categoriesCreateItem(req.body, req.user);
-    res.json(result);
-  });
+const controller = resourceControllerCreate({
+  operations: categoriesOperations,
+})
 
-  app.get('/categories', sessionsMiddleware(), async (req, res) => {
-    const result = await categoriesGetList();
-    res.json(result);
-  });
+const router = resourceRouterCreate({
+  resource: 'CATEGORIES',
+  controller,
+});
 
-  app.get('/categories/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await categoriesGetItem(req.params.id);
-    res.json(result);
-  });
-
-  app.patch('/categories/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await categoriesUpdateItem(req.params.id, req.body, req.user);
-    res.json(result);
-  });
-
-  app.delete('/categories/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await categoriesDeleteItem(req.params.id, req.user);
-    res.json(result);
-  });
-}
+export const categoriesRouter = router;

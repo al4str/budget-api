@@ -1,9 +1,15 @@
-import { dbDoesItemExist, dbGetItem, dbUpdate } from '@/libs/db';
+import {
+  dbDoesItemExist,
+  dbGetItem,
+  dbGetItems,
+  dbUpdate,
+} from '@/libs/db';
+import { ERRORS } from '@/helpers/errors';
 
 /**
  * @typedef {Object} UsersItem
  * @property {string} name
- * @property {string} avatarURL
+ * @property {string} avatarId
  * @property {string} pin
  * */
 
@@ -11,14 +17,14 @@ import { dbDoesItemExist, dbGetItem, dbUpdate } from '@/libs/db';
  * @typedef {Object} UsersItemPublic
  * @property {string} id
  * @property {string} name
- * @property {string} avatarURL
+ * @property {string} avatarId
  * */
 
 /**
  * @typedef {Object} UsersItemFull
  * @property {string} id
  * @property {string} name
- * @property {string} avatarURL
+ * @property {string} avatarId
  * @property {string} pin
  * */
 
@@ -58,7 +64,7 @@ export async function usersItem(params) {
     if (!item || item.meta.deleted) {
       return {
         ok: false,
-        reason: new Error('Does not exist'),
+        reason: new Error(ERRORS.resourceNotExist),
         data: null,
       };
     }
@@ -78,9 +84,43 @@ export async function usersItem(params) {
 }
 
 /**
+ * @return {Promise<{
+ *   ok: boolean
+ *   reason: null|Error
+ *   data: Array<UsersItemPublic>
+ * }>}
+ * */
+export async function usersList() {
+  try {
+    const items = dbGetItems({
+      name: 'USERS',
+    });
+
+    return {
+      ok: true,
+      reason: null,
+      data: items.map((item) => ({
+        id: item.id,
+        name: item.data.name,
+        avatarId: item.data.avatarId,
+      })),
+    };
+  }
+  catch (err) {
+    return {
+      ok: false,
+      reason: err,
+      data: [],
+    };
+  }
+}
+
+/**
  * @param {Object} params
  * @param {string} params.id
- * @param {Partial<UsersItem>} params.payload
+ * @param {Object} params.payload
+ * @param {string} [params.payload.name]
+ * @param {string} [params.payload.avatarId]
  * @param {string} params.byUserId
  * @return {Promise<{
  *   ok: boolean

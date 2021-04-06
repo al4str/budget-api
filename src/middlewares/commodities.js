@@ -1,35 +1,14 @@
-import { sessionsMiddleware } from '@/middlewares/sessions';
-import {
-  commoditiesGetItem,
-  commoditiesGetList,
-  commoditiesCreateItem,
-  commoditiesUpdateItem,
-  commoditiesDeleteItem,
-} from '@/controllers/commodities';
+import { resourceRouterCreate } from '@/helpers/resourceRouter';
+import { resourceControllerCreate } from '@/helpers/resourceController';
+import { commoditiesOperations } from '@/helpers/commodities';
 
-export function commoditiesRouter(app) {
-  app.post('/commodities', sessionsMiddleware(), async (req, res) => {
-    const result = await commoditiesCreateItem(req.body, req.user);
-    res.json(result);
-  });
+const controller = resourceControllerCreate({
+  operations: commoditiesOperations,
+})
 
-  app.get('/commodities', sessionsMiddleware(), async (req, res) => {
-    const result = await commoditiesGetList();
-    res.json(result);
-  });
+const router = resourceRouterCreate({
+  resource: 'COMMODITIES',
+  controller,
+});
 
-  app.get('/commodities/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await commoditiesGetItem(req.params.id);
-    res.json(result);
-  });
-
-  app.patch('/commodities/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await commoditiesUpdateItem(req.params.id, req.body, req.user);
-    res.json(result);
-  });
-
-  app.delete('/commodities/:id', sessionsMiddleware(), async (req, res) => {
-    const result = await commoditiesDeleteItem(req.params.id, req.user);
-    res.json(result);
-  });
-}
+export const commoditiesRouter = router;

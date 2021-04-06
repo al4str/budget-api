@@ -1,5 +1,6 @@
 import { jwtCreate, jwtVerify, jwtDecode } from '@/libs/jwt';
 import { dbGetItem, dbCreate, dbWipe } from '@/libs/db';
+import { ERRORS } from '@/helpers/errors';
 
 /**
  * @param {string} id
@@ -102,7 +103,7 @@ export function sessionsDecode(params) {
     if (!user || !user.id) {
       return {
         ok: false,
-        reason: new Error('Corrupted token'),
+        reason: new Error(ERRORS.sessionCorruptedToken),
         data: null,
       };
     }

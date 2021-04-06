@@ -1,11 +1,9 @@
-import {
-  dbDoesItemExist,
-  dbGetItems,
-  dbGetItem,
-  dbCreate,
-  dbUpdate,
-  dbDelete,
-} from '@/libs/db';
+import { datesValidate } from '@/libs/dates';
+import { sumValidate } from '@/libs/sum';
+import { ERRORS } from '@/helpers/errors';
+import { resourceOperationsCreate } from '@/helpers/resourceOperations';
+import { usersExists } from '@/helpers/users';
+import { categoriesExists } from '@/helpers/categories';
 
 /**
  * @typedef {Object} IncomeItem
@@ -26,221 +24,125 @@ import {
  * @property {string} comment
  * */
 
+const basicOperations = resourceOperationsCreate('INCOME');
+
 /**
  * @param {string} id
- * @return {Promise<boolean>}
+ * @param {IncomeItem} data
+ * @return {IncomeItemPublic}
  * */
-export async function incomeExists(id) {
-  try {
-    return dbDoesItemExist({
-      name: 'INCOME',
-      id,
-    });
+function publicMapper(id, data) {
+  return {
+    id,
+    userId: data.userId,
+    categoryId: data.categoryId,
+    date: data.date,
+    sum: data.sum,
+    comment: data.comment,
+  };
+}
+
+/**
+ * @param {Object} payload
+ * @param {string} payload.userId
+ * @param {string} payload.categoryId
+ * @param {string} payload.date
+ * @param {number} payload.sum
+ * @param {string} payload.comment
+ * @return {Promise<{
+ *   ok: boolean
+ *   reason: null|Error
+ * }>}
+ * */
+async function createValidator(payload) {
+  const {
+    userId,
+    categoryId,
+    date,
+    sum,
+  } = payload;
+  if (!await usersExists(userId)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidUser),
+    };
   }
-  catch (err) {
-    return false;
+  if (!await categoriesExists(categoryId)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidCategory),
+    };
+  }
+  if (!datesValidate(date)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidDate),
+    };
+  }
+  if (!sumValidate(sum)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidSum),
+    };
+  }
+  return {
+    ok: true,
+    reason: null,
   }
 }
 
 /**
- * @param {Object} params
- * @param {string} params.id
+ * @param {Object} payload
+ * @param {string} payload.userId
+ * @param {string} payload.categoryId
+ * @param {string} payload.date
+ * @param {number} payload.sum
+ * @param {string} payload.comment
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
- *   data: null|IncomeItem
  * }>}
  * */
-export async function incomeItem(params) {
-  try {
-    const { id } = params;
-    const item = dbGetItem({
-      name: 'INCOME',
-      id,
-    });
-
-    if (!item || item.meta.deleted) {
-      return {
-        ok: false,
-        reason: new Error('Does not exist'),
-        data: null,
-      };
-    }
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
+async function updateValidator(payload) {
+  const {
+    userId,
+    categoryId,
+    date,
+    sum,
+  } = payload;
+  if (typeof userId !== 'undefined' && !await usersExists(userId)) {
     return {
       ok: false,
-      reason: err,
-      data: null,
+      reason: new Error(ERRORS.incomeInvalidUser),
     };
+  }
+  if (typeof categoryId !== 'undefined' && !await categoriesExists(categoryId)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidCategory),
+    };
+  }
+  if (typeof date !== 'undefined' && !datesValidate(date)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidDate),
+    };
+  }
+  if (typeof sum !== 'undefined' && !sumValidate(sum)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.incomeInvalidSum),
+    };
+  }
+  return {
+    ok: true,
+    reason: null,
   }
 }
 
-/**
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: Array<IncomeItemPublic>
- * }>}
- * */
-export async function incomeList() {
-  try {
-    const items = dbGetItems({
-      name: 'INCOME',
-    });
-    const list = items
-      .filter((item) => !item.meta.deleted)
-      .map((item) => {
-        /** @type {IncomeItem} */
-        const data = item.data;
-
-        return {
-          ...data,
-          id: item.id,
-        };
-      })
-
-    return {
-      ok: true,
-      reason: null,
-      data: list,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: [],
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {IncomeItem} params.payload
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|IncomeItem
- * }>}
- * */
-export async function incomeCreate(params) {
-  try {
-    const {
-      id,
-      payload,
-      byUserId,
-    } = params;
-    const item = dbCreate({
-      name: 'INCOME',
-      id,
-      data: payload,
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {Partial<IncomeItem>} params.payload
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|IncomeItem
- * }>}
- * */
-export async function incomeUpdate(params) {
-  try {
-    const {
-      id,
-      payload,
-      byUserId,
-    } = params;
-    const item = dbUpdate({
-      name: 'INCOME',
-      id,
-      updater(prevItem) {
-        return {
-          ...prevItem,
-          data: {
-            ...prevItem.data,
-            ...payload,
-          },
-        };
-      },
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
-
-/**
- * @param {Object} params
- * @param {string} params.id
- * @param {string} params.byUserId
- * @return {Promise<{
- *   ok: boolean
- *   reason: null|Error
- *   data: null|IncomeItem
- * }>}
- * */
-export async function incomeDelete(params) {
-  try {
-    const {
-      id,
-      byUserId,
-    } = params;
-    const item = dbDelete({
-      name: 'INCOME',
-      id,
-      userId: byUserId,
-    });
-
-    return {
-      ok: true,
-      reason: null,
-      data: item.data,
-    };
-  }
-  catch (err) {
-    return {
-      ok: false,
-      reason: err,
-      data: null,
-    };
-  }
-}
+export const incomeOperations = {
+  ...basicOperations,
+  publicMapper,
+  createValidator,
+  updateValidator,
+};
