@@ -7,11 +7,6 @@ RUN apk add --no-cache python make g++ \
   && npm ci --only=production \
   && npm run build \
   && mkdir ./db
-# Add tini
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
 # Run
 VOLUME ./db
 EXPOSE 8080
