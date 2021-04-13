@@ -1,17 +1,18 @@
+import { idInvalid } from '@/libs/id';
 import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
 
 /**
  * @typedef {Object} CategoryItem
  * @property {string} title
- * @property {'income'|'costs'} type
+ * @property {'income'|'expense'} type
  * */
 
 /**
  * @typedef {Object} CategoryItemPublic
  * @property {string} id
  * @property {string} title
- * @property {'income'|'costs'} type
+ * @property {'income'|'expense'} type
  * */
 
 const basicOperations = resourceOperationsCreate('CATEGORIES');
@@ -33,8 +34,9 @@ function publicMapper(id, data) {
 
 /**
  * @param {Object} payload
+ * @param {string} payload.id
  * @param {string} payload.title
- * @param {'income'|'costs'} payload.type
+ * @param {'income'|'expense'} payload.type
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
@@ -42,16 +44,23 @@ function publicMapper(id, data) {
  * */
 async function createValidator(payload) {
   const {
+    id,
     title,
     type,
   } = payload;
+  if (idInvalid(id)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.categoriesInvalidId),
+    };
+  }
   if (!title) {
     return {
       ok: false,
       reason: new Error(ERRORS.categoriesInvalidTitle),
     };
   }
-  if (!['income', 'costs'].includes(type)) {
+  if (!['income', 'expense'].includes(type)) {
     return {
       ok: false,
       reason: new Error(ERRORS.categoriesInvalidType),
@@ -66,7 +75,7 @@ async function createValidator(payload) {
 /**
  * @param {Object} payload
  * @param {string} payload.title
- * @param {'income'|'costs'} payload.type
+ * @param {'income'|'expense'} payload.type
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
@@ -83,7 +92,7 @@ async function updateValidator(payload) {
       reason: new Error(ERRORS.categoriesInvalidTitle),
     };
   }
-  if (typeof type !== 'undefined' && !['income', 'costs'].includes(type)) {
+  if (typeof type !== 'undefined' && !['income', 'expense'].includes(type)) {
     return {
       ok: false,
       reason: new Error(ERRORS.categoriesInvalidType),

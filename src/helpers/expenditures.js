@@ -1,3 +1,4 @@
+import { idInvalid } from '@/libs/id';
 import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
 import { expensesExists } from '@/helpers/expenses';
@@ -41,6 +42,7 @@ function publicMapper(id, data) {
 
 /**
  * @param {Object} payload
+ * @param {string} payload.id
  * @param {string} payload.expenseId
  * @param {string} payload.commodityId
  * @param {string} payload.amount
@@ -52,9 +54,16 @@ function publicMapper(id, data) {
  * */
 async function createValidator(payload) {
   const {
+    id,
     expenseId,
     commodityId,
   } = payload;
+  if (idInvalid(id)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.expendituresInvalidId),
+    };
+  }
   if (!await expensesExists(expenseId)) {
     return {
       ok: false,

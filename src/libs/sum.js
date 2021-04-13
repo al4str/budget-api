@@ -3,5 +3,6 @@
  * @return {boolean}
  * */
 export function sumValidate(rawSum) {
-  return !rawSum || typeof rawSum !== 'number' || Number.isNaN(rawSum);
+  return typeof rawSum === 'number'
+    && !Number.isNaN(rawSum);
 }

@@ -1,3 +1,4 @@
+import { idInvalid } from '@/libs/id';
 import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
 import { categoriesExists } from '@/helpers/categories';
@@ -34,6 +35,7 @@ function publicMapper(id, data) {
 
 /**
  * @param {Object} payload
+ * @param {string} payload.id
  * @param {string} payload.title
  * @param {string} payload.categoryId
  * @return {Promise<{
@@ -43,9 +45,16 @@ function publicMapper(id, data) {
  * */
 async function createValidator(payload) {
   const {
+    id,
     title,
     categoryId,
   } = payload;
+  if (idInvalid(id)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.commoditiesInvalidId),
+    };
+  }
   if (!title) {
     return {
       ok: false,

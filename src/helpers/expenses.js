@@ -1,3 +1,4 @@
+import { idInvalid } from '@/libs/id';
 import { datesValidate } from '@/libs/dates';
 import { sumValidate } from '@/libs/sum';
 import { ERRORS } from '@/helpers/errors';
@@ -46,6 +47,7 @@ function publicMapper(id, data) {
 
 /**
  * @param {Object} payload
+ * @param {string} payload.id
  * @param {string} payload.userId
  * @param {string} payload.categoryId
  * @param {string} payload.date
@@ -58,11 +60,18 @@ function publicMapper(id, data) {
  * */
 async function createValidator(payload) {
   const {
+    id,
     userId,
     categoryId,
     date,
     sum,
   } = payload;
+  if (idInvalid(id)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.expensesInvalidId),
+    };
+  }
   if (!await usersExists(userId)) {
     return {
       ok: false,
