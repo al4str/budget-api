@@ -3,7 +3,6 @@ require('dotenv').config();
 const path = require('path');
 const NodeExternals = require('webpack-node-externals');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const NotifierPlugin = require('webpack-notifier');
 const DotenvPlugin = require('dotenv-webpack');
 const info = require('./package.json');
 
@@ -38,7 +37,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     ...(!isProduction
       ? [
-        new NotifierPlugin({
+        new require('webpack-notifier')({
           title: info.name,
           alwaysNotify: true,
         }),
