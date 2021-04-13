@@ -1,10 +1,12 @@
 import path from 'path';
 
-/** @type {string} */
-export const HOST = process.env.HOST || '0.0.0.0';
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-/** @type {number} */
-export const PORT = parseInt(process.env.PORT) || 3000;
+/** @type {string} */
+export const HOST = process.env.HOST;
+
+/** @type {string} */
+export const PORT = process.env.PORT;
 
 export const DIR_ROOT = process.cwd();
 

@@ -1,12 +1,9 @@
 import 'source-map-support/register';
 import util from 'util';
-import path from 'path';
-import https from 'https'
-import fs from 'fs/promises';
 import consola from 'consola';
-import { App } from '@tinyhttp/app'
-import { cors } from '@tinyhttp/cors'
-import { DIR_ROOT, HOST, PORT } from '@/constants';
+import { App } from '@tinyhttp/app';
+import { cors } from '@tinyhttp/cors';
+import { IS_PRODUCTION, HOST, PORT } from '@/constants';
 import { scaffold } from '@/helpers/scaffold';
 import { jsonMiddleware } from '@/middlewares/json';
 import { sessionsRouter } from '@/middlewares/sessions';
@@ -18,11 +15,16 @@ import { expensesRouter } from '@/middlewares/expenses';
 import { expendituresRouter } from '@/middlewares/expenditures';
 
 const console = consola.withTag('app');
+
 const app = new App({
   settings: {
-    networkExtensions: true
+    networkExtensions: true,
   },
   onError(err, req, res) {
+    if (IS_PRODUCTION) {
+      res.sendStatus(500);
+      return;
+    }
     res
       .status(500)
       .json(util.inspect(err, true));
@@ -35,7 +37,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 app.use(cors({
-  origin: '*',
+  origin: 'budget.al4str.dev',
   allowedHeaders: ['Content-Type', 'X-Token'],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 }));
@@ -55,19 +57,5 @@ expendituresRouter(app);
 
 (async function() {
   await scaffold();
-  const [
-    certificate,
-    privateKey,
-  ] = await Promise.all([
-    fs.readFile(path.join(DIR_ROOT, 'ssl', 'local.fin.al4str.dev.pem')),
-    fs.readFile(path.join(DIR_ROOT, 'ssl', 'local.fin.al4str.dev-key.pem')),
-  ]);
-  const serverOptions = {
-    key: privateKey,
-    cert: certificate,
-  };
-  const server = https.createServer(serverOptions)
-  server
-    .on('request', app.attach)
-    .listen(PORT, HOST, () => console.success(`https://${HOST}:${PORT}`));
+  app.listen(PORT, () => console.success(`http://${HOST}:${PORT}`), HOST);
 }());

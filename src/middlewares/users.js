@@ -27,6 +27,8 @@ export function usersRouter(app) {
   app.get('/users/:id/avatar/:avatarId', async (req, res) => {
     const { id, avatarId } = req.params;
     const avatarPath = usersGetAvatar(id, avatarId);
+    res.set('Cache-Control', 'public');
+    res.set('Expires', '1y');
     res.sendFile(avatarPath);
   });
 

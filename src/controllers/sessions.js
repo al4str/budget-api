@@ -46,7 +46,7 @@ export async function sessionsGetToken(params) {
       name: user.name,
       avatarId: user.avatarId,
     },
-    secret: user.pin.toString(),
+    secret: user.pin,
   });
 
   if (!result.ok) {
@@ -102,7 +102,7 @@ export async function sessionsGetUser(params) {
   const user = userResult.data;
   const result = await sessionsVerify({
     token,
-    secret: user.pin.toString(),
+    secret: user.pin,
   });
 
   if (!result.ok) {

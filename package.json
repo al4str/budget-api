@@ -1,7 +1,7 @@
 {
-  "name": "finances-api",
+  "name": "budget-api",
   "version": "1.0.0",
-  "description": "API for home finances app",
+  "description": "API for home budget app",
   "author": "al4str",
   "scripts": {
     "dev": "node dev.js",

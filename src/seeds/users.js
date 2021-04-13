@@ -4,14 +4,14 @@ export const SEEDS_USERS_AL4STR = {
   id: 'al4str',
   name: 'Нянто',
   avatarId: '',
-  pin: 1234,
+  pin: '0000',
 };
 
 export const SEEDS_USERS_NAVA = {
   id: 'nava',
   name: 'Лися',
   avatarId: '',
-  pin: 4321,
+  pin: '0000',
 };
 
 const USERS = [

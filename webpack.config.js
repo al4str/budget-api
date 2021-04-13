@@ -26,7 +26,7 @@ module.exports = {
   ],
   output: {
     path: path.resolve(process.cwd(), 'dist'),
-    filename: '[id]',
+    filename: 'index.js',
   },
   resolve: {
     alias: {
