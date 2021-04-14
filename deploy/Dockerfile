@@ -2,11 +2,11 @@
 FROM node:alpine
 WORKDIR /usr/src/app
 COPY . .
-RUN apk add --no-cache python make g++ \
-  && cp ./deploy/.env.example ./.env \
-  && npm ci --only=production \
-  && npm run build \
-  && mkdir ./volume
+RUN apk add --no-cache python make g++
+RUN cp ./deploy/.env.example ./.env
+RUN npm ci --only=production
+RUN npm run build
+RUN mkdir ./volume
 # Run
 VOLUME ./volume
 EXPOSE 8080
