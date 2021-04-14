@@ -117,6 +117,9 @@ export function dbSelect(params) {
 export function dbDoesItemExist(params) {
   const { name, id } = params;
   validateName(name);
+  if (!id) {
+    return false;
+  }
   return INSTANCE.exists(`/${name}/${id}`);
 }
 
