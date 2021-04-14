@@ -6,8 +6,8 @@ RUN apk add --no-cache python make g++ \
   && cp ./deploy/.env.example ./.env \
   && npm ci --only=production \
   && npm run build \
-  && mkdir ./db
+  && mkdir ./volume
 # Run
-VOLUME ./db
+VOLUME ./volume
 EXPOSE 8080
 CMD ["node", "--max-old-space-size=300", "dist/index.js"]

@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
 import {
-  DIR_TEMP,
   DIR_DB,
   DIR_UPLOADS,
   DIR_AVATARS,
@@ -15,28 +14,22 @@ import { seedsPlant } from '@/seeds';
  * */
 export async function scaffold() {
   try {
-    await fs.stat(DIR_TEMP);
-  }
-  catch (err) {
-    await fs.mkdir(DIR_TEMP);
-  }
-  try {
     await fs.stat(DIR_DB);
   }
   catch (err) {
-    await fs.mkdir(DIR_DB);
+    await fs.mkdir(DIR_DB, { recursive: true });
   }
   try {
     await fs.stat(DIR_UPLOADS);
   }
   catch (err) {
-    await fs.mkdir(DIR_UPLOADS);
+    await fs.mkdir(DIR_UPLOADS, { recursive: true });
   }
   try {
     await fs.stat(DIR_AVATARS);
   }
   catch (err) {
-    await fs.mkdir(DIR_AVATARS);
+    await fs.mkdir(DIR_AVATARS, { recursive: true });
   }
   const dbPath = path.join(DIR_DB, DB_NAME);
   try {

@@ -2,7 +2,7 @@ import path from 'path';
 import { JsonDB as DB } from 'node-json-db';
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
 import { datesUTCGetTimestamp } from '@/libs/dates';
-import { DIR_DB, DB_NAME } from '@/constants';
+import { IS_PRODUCTION, DIR_DB, DB_NAME } from '@/constants';
 import { ERRORS } from '@/helpers/errors';
 
 /**
@@ -84,7 +84,12 @@ function validateUser(userId) {
  * */
 export function dbInit() {
   const dbPath = path.join(DIR_DB, DB_NAME);
-  const dbConfig = new Config(dbPath, true, true, '/');
+  const dbConfig = new Config(
+    dbPath,
+    true,
+    !IS_PRODUCTION,
+    '/',
+  );
   INSTANCE = new DB(dbConfig);
 }
 

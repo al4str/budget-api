@@ -1,7 +1,6 @@
 .env
-.idea
 TODO.md
+.idea
 node_modules
-temp
 dist
-db
+volume
