@@ -18,6 +18,7 @@ module.exports = {
   stats: 'minimal',
   entry: {
     'index.js': './src/index.js',
+    'setup-users.js': './src/setup-users.js',
   },
   externals: [
     NodeExternals({
@@ -26,7 +27,7 @@ module.exports = {
   ],
   output: {
     path: path.resolve(process.cwd(), 'dist'),
-    filename: 'index.js',
+    filename: '[name]',
   },
   resolve: {
     alias: {
