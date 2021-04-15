@@ -196,13 +196,10 @@ export function resourceOperationsCreate(resource) {
       const item = dbUpdate({
         name: resource,
         id,
-        updater(prevItem) {
+        updater(prevData) {
           return {
-            ...prevItem,
-            data: {
-              ...prevItem.data,
-              ...payload,
-            },
+            ...prevData,
+            ...payload,
           };
         },
         userId: byUserId,

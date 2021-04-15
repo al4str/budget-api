@@ -14,6 +14,8 @@ export const DIR_VOLUME = path.join(DIR_ROOT, '/volume');
 
 export const DIR_DB = path.join(DIR_VOLUME, '/db');
 
+export const DIR_BACKUPS = path.join(DIR_VOLUME, '/backups');
+
 export const DIR_TEMP = path.join(DIR_VOLUME, '/temp');
 
 export const DIR_UPLOADS = path.join(DIR_TEMP, '/uploads');

@@ -13,6 +13,7 @@ import { commoditiesRouter } from '@/middlewares/commodities';
 import { incomeRouter } from '@/middlewares/income';
 import { expensesRouter } from '@/middlewares/expenses';
 import { expendituresRouter } from '@/middlewares/expenditures';
+import { backupRouter } from '@/middlewares/backup';
 
 const console = consola.withTag('app');
 
@@ -54,6 +55,7 @@ commoditiesRouter(app);
 incomeRouter(app);
 expensesRouter(app);
 expendituresRouter(app);
+backupRouter(app);
 
 (async function() {
   await scaffold();

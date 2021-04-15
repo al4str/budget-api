@@ -187,7 +187,7 @@ export function dbCreate(params) {
  * @param {Object} params
  * @param {DBName} params.name
  * @param {string} params.id
- * @param {function(DBItem): DBItem} params.updater
+ * @param {function(Object): Object} params.updater
  * @param {string} params.userId
  * @return {DBItem}
  * */
@@ -195,11 +195,20 @@ export function dbUpdate(params) {
   const { name, id, updater, userId } = params;
   validateName(name);
   validateUser(userId);
+  /** @type {DBItem} */
   const prevItem = INSTANCE.getData(`/${name}/${id}`);
-  const nextItem = updater(prevItem);
-  nextItem.meta.metaUpdate = {
-    userId,
-    date: datesUTCGetTimestamp(),
+  const nextData = updater(prevItem.data);
+  /** @type {DBItem} */
+  const nextItem = {
+    ...prevItem,
+    data: nextData,
+    meta: {
+      ...prevItem.meta,
+      metaUpdate: {
+        userId,
+        date: datesUTCGetTimestamp(),
+      },
+    },
   };
   INSTANCE.push(`/${name}/${id}`, nextItem);
   return nextItem;

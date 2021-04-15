@@ -138,13 +138,10 @@ export async function usersUpdate(params) {
     const item = dbUpdate({
       name: 'USERS',
       id,
-      updater(prevItem) {
+      updater(prevData) {
         return {
-          ...prevItem,
-          data: {
-            ...prevItem.data,
-            ...payload,
-          },
+          ...prevData,
+          ...payload,
         };
       },
       userId: byUserId,

@@ -10,14 +10,11 @@ function updateUserPIN(userId, userPIN) {
   dbUpdate({
     name: 'USERS',
     id: userId,
-    updater(prevItem) {
+    updater(prevData) {
       return {
-        ...prevItem,
-        data: {
-          ...prevItem.data,
-          pin: userPIN,
-        },
-      }
+        ...prevData,
+        pin: userPIN,
+      };
     },
     userId: DB_SEED_USER_ID,
   });
