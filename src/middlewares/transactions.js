@@ -1,14 +1,14 @@
 import { resourceRouterCreate } from '@/helpers/resourceRouter';
 import { resourceControllerCreate } from '@/helpers/resourceController';
-import { expensesOperations } from '@/helpers/expenses';
+import { transactionsOperations } from '@/helpers/transactions';
 
 const controller = resourceControllerCreate({
-  operations: expensesOperations,
+  operations: transactionsOperations,
 })
 
 const router = resourceRouterCreate({
-  resource: 'EXPENSES',
+  resource: 'TRANSACTIONS',
   controller,
 });
 
-export const expensesRouter = router;
+export const transactionsRouter = router;

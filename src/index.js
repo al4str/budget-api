@@ -10,8 +10,7 @@ import { sessionsRouter } from '@/middlewares/sessions';
 import { usersRouter } from '@/middlewares/users';
 import { categoriesRouter } from '@/middlewares/categories';
 import { commoditiesRouter } from '@/middlewares/commodities';
-import { incomeRouter } from '@/middlewares/income';
-import { expensesRouter } from '@/middlewares/expenses';
+import { transactionsRouter } from '@/middlewares/transactions';
 import { expendituresRouter } from '@/middlewares/expenditures';
 import { backupRouter } from '@/middlewares/backup';
 
@@ -52,8 +51,7 @@ sessionsRouter(app);
 usersRouter(app);
 categoriesRouter(app);
 commoditiesRouter(app);
-incomeRouter(app);
-expensesRouter(app);
+transactionsRouter(app);
 expendituresRouter(app);
 backupRouter(app);
 

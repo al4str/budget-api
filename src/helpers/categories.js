@@ -5,14 +5,14 @@ import { resourceOperationsCreate } from '@/helpers/resourceOperations';
 /**
  * @typedef {Object} CategoryItem
  * @property {string} title
- * @property {'income'|'expense'} type
+ * @property {TransactionType} type
  * */
 
 /**
  * @typedef {Object} CategoryItemPublic
  * @property {string} id
  * @property {string} title
- * @property {'income'|'expense'} type
+ * @property {TransactionType} type
  * */
 
 const basicOperations = resourceOperationsCreate('CATEGORIES');
@@ -36,7 +36,7 @@ function publicMapper(id, data) {
  * @param {Object} payload
  * @param {string} payload.id
  * @param {string} payload.title
- * @param {'income'|'expense'} payload.type
+ * @param {TransactionType} payload.type
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
@@ -75,7 +75,7 @@ async function createValidator(payload) {
 /**
  * @param {Object} payload
  * @param {string} payload.title
- * @param {'income'|'expense'} payload.type
+ * @param {TransactionType} payload.type
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error

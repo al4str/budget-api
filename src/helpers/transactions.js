@@ -7,32 +7,36 @@ import { usersExists } from '@/helpers/users';
 import { categoriesExists } from '@/helpers/categories';
 
 /**
- * @typedef {Object} ExpensesItem
+ * @typedef {'income'|'expense'} TransactionType
+ * */
+
+/**
+ * @typedef {Object} TransactionItem
  * @property {string} userId
  * @property {string} categoryId
- * @property {number} date
+ * @property {string} date
  * @property {number} sum
  * @property {string} comment
  * */
 
 /**
- * @typedef {Object} ExpensesItemPublic
+ * @typedef {Object} TransactionItemPublic
  * @property {string} id
  * @property {string} userId
  * @property {string} categoryId
- * @property {number} date
+ * @property {string} date
  * @property {number} sum
  * @property {string} comment
  * */
 
-const basicOperations = resourceOperationsCreate('EXPENSES');
+const basicOperations = resourceOperationsCreate('TRANSACTIONS');
 
-export const expensesExists = basicOperations.exist;
+export const transactionsExist = basicOperations.exist;
 
 /**
  * @param {string} id
- * @param {ExpensesItem} data
- * @return {ExpensesItemPublic}
+ * @param {TransactionItem} data
+ * @return {TransactionItemPublic}
  * */
 function publicMapper(id, data) {
   return {
@@ -69,31 +73,31 @@ async function createValidator(payload) {
   if (idInvalid(id)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidId),
+      reason: new Error(ERRORS.transactionsInvalidId),
     };
   }
   if (!await usersExists(userId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidUser),
+      reason: new Error(ERRORS.transactionsInvalidUser),
     };
   }
   if (!await categoriesExists(categoryId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidCategory),
+      reason: new Error(ERRORS.transactionsInvalidCategory),
     };
   }
   if (!datesValidate(date)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidDate),
+      reason: new Error(ERRORS.transactionsInvalidDate),
     };
   }
   if (!sumValidate(sum)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidSum),
+      reason: new Error(ERRORS.transactionsInvalidSum),
     };
   }
   return {
@@ -124,25 +128,25 @@ async function updateValidator(payload) {
   if (typeof userId !== 'undefined' && !await usersExists(userId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidUser),
+      reason: new Error(ERRORS.transactionsInvalidUser),
     };
   }
   if (typeof categoryId !== 'undefined' && !await categoriesExists(categoryId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidCategory),
+      reason: new Error(ERRORS.transactionsInvalidCategory),
     };
   }
   if (typeof date !== 'undefined' && !datesValidate(date)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidDate),
+      reason: new Error(ERRORS.transactionsInvalidDate),
     };
   }
   if (typeof sum !== 'undefined' && !sumValidate(sum)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expensesInvalidSum),
+      reason: new Error(ERRORS.transactionsInvalidSum),
     };
   }
   return {
@@ -151,7 +155,7 @@ async function updateValidator(payload) {
   }
 }
 
-export const expensesOperations = {
+export const transactionsOperations = {
   ...basicOperations,
   publicMapper,
   createValidator,

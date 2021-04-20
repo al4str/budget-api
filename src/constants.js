@@ -5,7 +5,7 @@ export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 /** @type {string} */
 export const HOST = process.env.HOST;
 
-/** @type {string} */
+/** @type {number} */
 export const PORT = process.env.PORT;
 
 export const DIR_ROOT = process.cwd();

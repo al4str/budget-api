@@ -1,12 +1,12 @@
 import { idInvalid } from '@/libs/id';
 import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
-import { expensesExists } from '@/helpers/expenses';
+import { transactionsExist } from '@/helpers/transactions';
 import { commoditiesExists } from '@/helpers/commodities';
 
 /**
  * @typedef {Object} ExpendituresItem
- * @property {string} expenseId
+ * @property {string} transactionId
  * @property {string} commodityId
  * @property {number} amount
  * @property {boolean} essential
@@ -15,15 +15,13 @@ import { commoditiesExists } from '@/helpers/commodities';
 /**
  * @typedef {Object} ExpendituresItemPublic
  * @property {string} id
- * @property {string} expenseId
+ * @property {string} transactionId
  * @property {string} commodityId
  * @property {number} amount
  * @property {boolean} essential
  * */
 
 const basicOperations = resourceOperationsCreate('EXPENDITURES');
-
-export const expendituresExists = basicOperations.exist;
 
 /**
  * @param {string} id
@@ -33,7 +31,7 @@ export const expendituresExists = basicOperations.exist;
 function publicMapper(id, data) {
   return {
     id,
-    expenseId: data.expenseId,
+    transactionId: data.transactionId,
     commodityId: data.commodityId,
     amount: data.amount,
     essential: data.essential,
@@ -43,7 +41,7 @@ function publicMapper(id, data) {
 /**
  * @param {Object} payload
  * @param {string} payload.id
- * @param {string} payload.expenseId
+ * @param {string} payload.transactionId
  * @param {string} payload.commodityId
  * @param {string} payload.amount
  * @param {number} payload.essential
@@ -55,7 +53,7 @@ function publicMapper(id, data) {
 async function createValidator(payload) {
   const {
     id,
-    expenseId,
+    transactionId,
     commodityId,
   } = payload;
   if (idInvalid(id)) {
@@ -64,10 +62,10 @@ async function createValidator(payload) {
       reason: new Error(ERRORS.expendituresInvalidId),
     };
   }
-  if (!await expensesExists(expenseId)) {
+  if (!await transactionsExist(transactionId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expendituresInvalidExpense),
+      reason: new Error(ERRORS.expendituresInvalidTransaction),
     };
   }
   if (!await commoditiesExists(commodityId)) {
@@ -84,7 +82,7 @@ async function createValidator(payload) {
 
 /**
  * @param {Object} payload
- * @param {string} payload.expenseId
+ * @param {string} payload.transactionId
  * @param {string} payload.commodityId
  * @param {string} payload.amount
  * @param {number} payload.essential
@@ -95,13 +93,14 @@ async function createValidator(payload) {
  * */
 async function updateValidator(payload) {
   const {
-    expenseId,
+    transactionId,
     commodityId,
   } = payload;
-  if (typeof expenseId !== 'undefined' && !await expensesExists(expenseId)) {
+  if (typeof transactionId !== 'undefined'
+    && !await transactionsExist(transactionId)) {
     return {
       ok: false,
-      reason: new Error(ERRORS.expendituresInvalidExpense),
+      reason: new Error(ERRORS.expendituresInvalidTransaction),
     };
   }
   if (typeof commodityId !== 'undefined' && !await commoditiesExists(commodityId)) {
