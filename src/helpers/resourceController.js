@@ -17,7 +17,7 @@ import { ERRORS } from '@/helpers/errors';
  *    ok: boolean
  *    reason: null|Error
  *  }>
- *  list: function(): Promise<{
+ *  list: function(Object): Promise<{
  *    ok: boolean
  *    reason: null|Error
  *    data: Array<ResourcePublic>
@@ -59,7 +59,7 @@ import { ERRORS } from '@/helpers/errors';
  * }} params.operations
  *
  * @return {{
- *   list: function(): Promise<{
+ *   list: function(Object): Promise<{
  *     ok: boolean,
  *     reason: string
  *     data: Array<ResourcePublic>
@@ -105,14 +105,15 @@ export function resourceControllerCreate(params) {
   const { operations } = params;
 
   /**
+   * @param {Object} query
    * @return {Promise<{
    *   ok: boolean
    *   reason: string
    *   data: Array<Object>
    * }>}
    * */
-  async function list() {
-    const result = await operations.list();
+  async function list(query) {
+    const result = await operations.list(query);
 
     if (!result.ok) {
       return {

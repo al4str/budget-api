@@ -1,15 +1,14 @@
+import { DateTime } from 'luxon';
+
 /**
- * @param {string} rawDate
+ * @param {string} date
  * @return {boolean}
  * */
-export function datesValidate(rawDate) {
-  if (!rawDate) {
-    return false;
-  }
+export function datesValidate(date) {
   try {
-    const date = new Date(rawDate).getTime();
+    const dateObj = DateTime.fromISO(date);
 
-    return !Number.isNaN(date);
+    return dateObj.isValid;
   }
   catch (err) {
     return false;
@@ -20,5 +19,29 @@ export function datesValidate(rawDate) {
  * @return {number}
  * */
 export function datesUTCGetTimestamp() {
-  return new Date(new Date().toUTCString()).getTime();
+  const nowObj = DateTime.local().setZone('utc');
+
+  return nowObj.toMillis();
+}
+
+/**
+ * @param {string} date
+ * @param {string} from
+ * @param {string} to
+ * @return {boolean}
+ * */
+export function datesInRange(date, from, to) {
+  const dateObj = DateTime.fromISO(date);
+  const fromObj = DateTime.fromISO(from).startOf('day');
+  const toObj = DateTime.fromISO(to).endOf('day');
+  if (!dateObj.isValid || (!fromObj.isValid && !toObj.isValid)) {
+    return false;
+  }
+  if (!fromObj.isValid) {
+    return dateObj <= toObj;
+  }
+  if (!toObj.isValid) {
+    return fromObj >= dateObj;
+  }
+  return fromObj >= dateObj && dateObj <= toObj;
 }

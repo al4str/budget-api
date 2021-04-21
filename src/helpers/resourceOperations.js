@@ -13,9 +13,11 @@ import { ERRORS } from '@/helpers/errors';
  * @template {ResourceItem & { id: string }} ResourcePublic
  *
  * @param {DBName} resource
+ * @param {function(query: Object):
+ *   function(Array<DBItem>): Array<DBItem>} [getSelector]
  *
  * @return {{
- *   list: function(): Promise<{
+ *   list: function(Object): Promise<{
  *     ok: boolean
  *     reason: null|Error
  *     data: Array<ResourcePublic>
@@ -56,22 +58,34 @@ import { ERRORS } from '@/helpers/errors';
  *   exist: function(id: string): Promise<boolean>
  * }}
  * */
-export function resourceOperationsCreate(resource) {
+export function resourceOperationsCreate(resource, getSelector) {
   /**
+   * @param {Object} query
    * @return {Promise<{
    *   ok: boolean
    *   reason: null|Error
    *   data: Array<Object & { id: string }>
    * }>}
    * */
-  async function list() {
+  async function list(query) {
     try {
-      const items = dbGetItems({
+      /**
+       * @param {Array<DBItem>} items
+       * @return {Array<DBItem>}
+       * */
+      const itemsSelector = (items) => {
+        if (typeof getSelector === 'function') {
+          const selector = getSelector(query);
+          return selector(items);
+        }
+        return items;
+      };
+      const itemsAll = dbGetItems({
         name: resource,
       });
-      const list = items
-        .filter((item) => !item.meta.deleted)
-        .map((item) => {
+      const itemsNotDeleted = itemsAll.filter((item) => !item.meta.deleted);
+      const itemsSelected = itemsSelector(itemsNotDeleted);
+      const items = itemsSelected.map((item) => {
           /** @type {Object} */
           const data = item.data;
 
@@ -84,7 +98,7 @@ export function resourceOperationsCreate(resource) {
       return {
         ok: true,
         reason: null,
-        data: list,
+        data: items,
       };
     }
     catch (err) {

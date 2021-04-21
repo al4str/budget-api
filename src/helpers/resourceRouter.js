@@ -8,7 +8,7 @@ import { sessionsMiddleware } from '@/middlewares/sessions';
  * @param {Object} params
  * @param {DBName} params.resource
  * @param {{
- *   list: function(): Promise
+ *   list: function(Object): Promise
  *   read: function(string): Promise
  *   create: function(Object, UsersItemFull): Promise
  *   update: function(string, Object, UsersItemFull): Promise
@@ -27,7 +27,7 @@ export function resourceRouterCreate(params) {
    * */
   function router(app) {
     app.get(`/${resourcePath}`, sessionsMiddleware(), async (req, res) => {
-      const result = await controller.list();
+      const result = await controller.list(req.query);
       res.json(result);
     });
 

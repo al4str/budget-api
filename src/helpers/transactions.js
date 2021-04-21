@@ -1,5 +1,5 @@
 import { idInvalid } from '@/libs/id';
-import { datesValidate } from '@/libs/dates';
+import { datesValidate, datesInRange } from '@/libs/dates';
 import { sumValidate } from '@/libs/sum';
 import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
@@ -33,7 +33,95 @@ import { expendituresValidator } from '@/helpers/expenditures';
  * @property {Array<ExpenditureItem>} expenditures
  * */
 
-const basicOperations = resourceOperationsCreate('TRANSACTIONS');
+/**
+ * @param {Object} query
+ * @param {string} query.offset
+ * @param {string} query.length
+ * @param {string} query.byType
+ * @param {string} query.byCategory
+ * @param {[string, string]} query.inDateRange
+ * @param {string} query.withCommodity
+ * @param {string} query.withEssential
+ * @return {function(Array<DBItem>): Array<DBItem>}
+ * */
+function getSelector(query) {
+  const offset = typeof query.offset !== 'undefined'
+    ? parseInt(query.offset, 10)
+    : -1;
+  const length = typeof query.length !== 'undefined'
+    ? parseInt(query.length, 10)
+    : -1;
+  const byType = ['income', 'expense'].includes(query.byType)
+    ? query.byType
+    : '';
+  const byCategory = typeof query.byCategory === 'string'
+    && query.byCategory.length > 0
+    ? query.byCategory
+    : '';
+  const [dateFrom, dateTo] = Array.isArray(query.inDateRange)
+    && query.inDateRange.length === 2
+    ? query.inDateRange
+    : ['', ''];
+  const withCommodity = typeof query.withCommodity === 'string'
+    && query.withCommodity.length > 0
+    ? query.withCommodity
+    : '';
+  const withEssential = typeof query.withEssential === 'string'
+    && query.withEssential === '1'
+    ? 1
+    : -1;
+  const hasFiltering = !!byType
+    || !!byCategory
+    || !!dateFrom
+    || !!dateTo
+    || !!withCommodity
+    || withEssential !== -1;
+  const hasPaging = offset !== -1
+    || length !== -1
+
+  /**
+   * @param {Array<DBItem>} items
+   * @return {Array<DBItem>}
+   * */
+  function selector(items) {
+    if (!hasFiltering && !hasPaging) {
+      return items;
+    }
+    const start = offset !== -1
+      ? offset
+      : 0;
+    const end = length !== -1
+      ? length
+      : items.length
+    return items
+      .filter((item) => {
+        /** @type {TransactionItem} */
+        const data = item.data;
+        const invalidType = byType
+          && data.type !== byType;
+        const invalidCategory = byCategory
+          && data.categoryId !== byCategory;
+        const invalidDate = (dateFrom || dateTo)
+          && !datesInRange(data.date, dateFrom, dateTo);
+        const invalidCommodity = withCommodity
+          && !data.expenditures.some((expenditure) => expenditure.commodityId === withCommodity);
+        const invalidEssential = withEssential === 1
+          && !data.expenditures.some((expenditure) => expenditure.essential === true);
+        const invalidAnything = invalidType
+          || invalidCategory
+          || invalidDate
+          || invalidCommodity
+          || invalidEssential;
+
+        return !invalidAnything;
+      })
+      .slice(start, end)
+  }
+
+  return selector;
+}
+
+const basicOperations = resourceOperationsCreate('TRANSACTIONS', getSelector);
 
 /**
  * @param {string} id
