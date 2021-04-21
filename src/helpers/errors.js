@@ -22,8 +22,10 @@ export const ERRORS = {
   expendituresInvalidTransaction: 'errors.expenditures.invalid-transaction',
   expendituresInvalidCommodity: 'errors.expenditures.invalid-commodity',
   transactionsInvalidId: 'errors.transactions.invalid-id',
+  transactionsInvalidType: 'errors.transactions.invalid-type',
   transactionsInvalidUser: 'errors.transactions.invalid-user',
   transactionsInvalidCategory: 'errors.transactions.invalid-category',
   transactionsInvalidDate: 'errors.transactions.invalid-date',
   transactionsInvalidSum: 'errors.transactions.invalid-sum',
+  transactionsInvalidExpenditures: 'errors.transactions.invalid-expenditures',
 };

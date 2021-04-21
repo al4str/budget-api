@@ -11,7 +11,6 @@ import { usersRouter } from '@/middlewares/users';
 import { categoriesRouter } from '@/middlewares/categories';
 import { commoditiesRouter } from '@/middlewares/commodities';
 import { transactionsRouter } from '@/middlewares/transactions';
-import { expendituresRouter } from '@/middlewares/expenditures';
 import { backupRouter } from '@/middlewares/backup';
 
 const console = consola.withTag('app');
@@ -52,7 +51,6 @@ usersRouter(app);
 categoriesRouter(app);
 commoditiesRouter(app);
 transactionsRouter(app);
-expendituresRouter(app);
 backupRouter(app);
 
 (async function() {

@@ -5,6 +5,7 @@ import { ERRORS } from '@/helpers/errors';
 import { resourceOperationsCreate } from '@/helpers/resourceOperations';
 import { usersExists } from '@/helpers/users';
 import { categoriesExists } from '@/helpers/categories';
+import { expendituresValidator } from '@/helpers/expenditures';
 
 /**
  * @typedef {'income'|'expense'} TransactionType
@@ -12,26 +13,27 @@ import { categoriesExists } from '@/helpers/categories';
 
 /**
  * @typedef {Object} TransactionItem
+ * @property {TransactionType} type
  * @property {string} userId
  * @property {string} categoryId
  * @property {string} date
  * @property {number} sum
  * @property {string} comment
+ * @property {Array<ExpenditureItem>} expenditures
  * */
 
 /**
  * @typedef {Object} TransactionItemPublic
+ * @property {TransactionType} type
  * @property {string} id
  * @property {string} userId
  * @property {string} categoryId
  * @property {string} date
  * @property {number} sum
- * @property {string} comment
+ * @property {Array<ExpenditureItem>} expenditures
  * */
 
 const basicOperations = resourceOperationsCreate('TRANSACTIONS');
-
-export const transactionsExist = basicOperations.exist;
 
 /**
  * @param {string} id
@@ -40,23 +42,27 @@ export const transactionsExist = basicOperations.exist;
  * */
 function publicMapper(id, data) {
   return {
+    type: data.type,
     id,
     userId: data.userId,
     categoryId: data.categoryId,
     date: data.date,
     sum: data.sum,
     comment: data.comment,
+    expenditures: data.expenditures,
   };
 }
 
 /**
  * @param {Object} payload
  * @param {string} payload.id
+ * @param {string} payload.type
  * @param {string} payload.userId
  * @param {string} payload.categoryId
  * @param {string} payload.date
  * @param {number} payload.sum
  * @param {string} payload.comment
+ * @param {Array<ExpenditureItem>} payload.expenditures
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
@@ -65,15 +71,23 @@ function publicMapper(id, data) {
 async function createValidator(payload) {
   const {
     id,
+    type,
     userId,
     categoryId,
     date,
     sum,
+    expenditures,
   } = payload;
   if (idInvalid(id)) {
     return {
       ok: false,
       reason: new Error(ERRORS.transactionsInvalidId),
+    };
+  }
+  if (!['income', 'expense'].includes(type)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.transactionsInvalidType),
     };
   }
   if (!await usersExists(userId)) {
@@ -100,6 +114,12 @@ async function createValidator(payload) {
       reason: new Error(ERRORS.transactionsInvalidSum),
     };
   }
+  if (!await expendituresValidator(expenditures)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.transactionsInvalidExpenditures),
+    };
+  }
   return {
     ok: true,
     reason: null,
@@ -113,6 +133,7 @@ async function createValidator(payload) {
  * @param {string} payload.date
  * @param {number} payload.sum
  * @param {string} payload.comment
+ * @param {Array<ExpenditureItem>} payload.expenditures
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
@@ -124,6 +145,7 @@ async function updateValidator(payload) {
     categoryId,
     date,
     sum,
+    expenditures,
   } = payload;
   if (typeof userId !== 'undefined' && !await usersExists(userId)) {
     return {
@@ -147,6 +169,12 @@ async function updateValidator(payload) {
     return {
       ok: false,
       reason: new Error(ERRORS.transactionsInvalidSum),
+    };
+  }
+  if (typeof sum !== 'undefined' && !await expendituresValidator(expenditures)) {
+    return {
+      ok: false,
+      reason: new Error(ERRORS.transactionsInvalidExpenditures),
     };
   }
   return {
