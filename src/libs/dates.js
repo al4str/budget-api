@@ -34,14 +34,14 @@ export function datesInRange(date, from, to) {
   const dateObj = DateTime.fromISO(date);
   const fromObj = DateTime.fromISO(from).startOf('day');
   const toObj = DateTime.fromISO(to).endOf('day');
-  if (!dateObj.isValid || (!fromObj.isValid && !toObj.isValid)) {
+  if (dateObj.invalid || (fromObj.invalid && toObj.invalid)) {
     return false;
   }
-  if (!fromObj.isValid) {
+  if (fromObj.invalid) {
     return dateObj <= toObj;
   }
-  if (!toObj.isValid) {
-    return fromObj >= dateObj;
+  if (toObj.invalid) {
+    return dateObj >= fromObj;
   }
-  return fromObj >= dateObj && dateObj <= toObj;
+  return dateObj >= fromObj && dateObj <= toObj;
 }
