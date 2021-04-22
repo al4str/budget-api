@@ -31,9 +31,14 @@ export function datesUTCGetTimestamp() {
  * @return {boolean}
  * */
 export function datesInRange(date, from, to) {
-  const dateObj = DateTime.fromISO(date);
-  const fromObj = DateTime.fromISO(from).startOf('day');
-  const toObj = DateTime.fromISO(to).endOf('day');
+  const dateObj = DateTime
+    .fromISO(date);
+  const fromObj = DateTime
+    .fromISO(from)
+    .startOf('month');
+  const toObj = DateTime
+    .fromISO(to)
+    .endOf('month');
   if (dateObj.invalid || (fromObj.invalid && toObj.invalid)) {
     return false;
   }
