@@ -12,6 +12,7 @@ import { categoriesRouter } from '@/middlewares/categories';
 import { commoditiesRouter } from '@/middlewares/commodities';
 import { transactionsRouter } from '@/middlewares/transactions';
 import { backupRouter } from '@/middlewares/backup';
+import { budgetRouter } from '@/middlewares/budget';
 
 const console = consola.withTag('app');
 
@@ -52,6 +53,7 @@ categoriesRouter(app);
 commoditiesRouter(app);
 transactionsRouter(app);
 backupRouter(app);
+budgetRouter(app);
 
 (async function() {
   await scaffold();
