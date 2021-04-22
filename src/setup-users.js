@@ -1,4 +1,21 @@
+import readLine from 'readline';
 import { DB_SEED_USER_ID, dbInit, dbUpdate } from '@/libs/db';
+
+const lineReader = readLine.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+lineReader.question('Enter ID\n', (id) => {
+  lineReader.question('Enter new PIN\n', (pin)  => {
+    updateUserPIN(id, pin);
+    lineReader.close();
+  });
+});
+
+lineReader.on('close', () => {
+  process.exit(0);
+});
 
 /**
  * @param {string} userId
@@ -19,7 +36,3 @@ function updateUserPIN(userId, userPIN) {
     userId: DB_SEED_USER_ID,
   });
 }
-
-const [userId, userPIN] = process.argv.slice(2);
-
-updateUserPIN(userId, userPIN);
