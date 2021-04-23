@@ -9,7 +9,7 @@ import {
  * @return {Promise<{
  *   ok: boolean
  *   reason: string
- *   data: Array<BudgetValueItem>
+ *   data: Array<BudgetItem>
  * }>}
  * */
 export async function budgetObtainAverageValues() {
@@ -33,7 +33,7 @@ export async function budgetObtainAverageValues() {
  * @return {Promise<{
  *   ok: boolean
  *   reason: string
- *   data: Array<BudgetValueItem>
+ *   data: BudgetData
  * }>}
  * */
 export async function budgetObtainFixedValues() {
@@ -54,33 +54,37 @@ export async function budgetObtainFixedValues() {
 }
 
 /**
- * @param {Object} payload
- * @param {Array<BudgetValueItem>} payload.values
+ * @param {BudgetData} payload
  * @param {UsersItemFull} byUser
  * @return {Promise<{
  *   ok: boolean
  *   reason: string
- *   data: Array<BudgetValueItem>
+ *   data: BudgetData
  * }>}
  * */
 export async function budgetUpdateFixedValues(payload, byUser) {
-  if (typeof payload !== 'object' || !payload || !Array.isArray(payload.values)) {
+  if (typeof payload !== 'object' || !payload) {
     return {
       ok: false,
       reason: ERRORS.resourceInvalidParams,
-      data: null,
+      data: {
+        items: [],
+        income: 0.00,
+      },
     };
   }
   if (!byUser) {
     return {
       ok: false,
       reason: ERRORS.resourceUnknownUser,
-      data: null,
+      data: {
+        items: [],
+        income: 0.00,
+      },
     };
   }
-  const { values } = payload;
   const result = await budgetFixValues({
-    values,
+    payload,
     byUserId: byUser.id,
   });
 

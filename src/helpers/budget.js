@@ -1,9 +1,15 @@
 import { dbGetItems, dbGetItem, dbCreate } from '@/libs/db';
 
 /**
- * @typedef {Object} BudgetValueItem
+ * @typedef {Object} BudgetItem
  * @property {string} categoryId
  * @property {number} value
+ * */
+
+/**
+ * @typedef {Object} BudgetData
+ * @property {Array<BudgetItem>} items
+ * @property {number} income
  * */
 
 const ID = 'FIXED';
@@ -12,7 +18,7 @@ const ID = 'FIXED';
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
- *   data: Array<BudgetValueItem>
+ *   data: Array<BudgetItem>
  * }>}
  * */
 export async function budgetGetAverageValues() {
@@ -74,63 +80,71 @@ export async function budgetGetAverageValues() {
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
- *   data: Array<BudgetValueItem>
+ *   data: BudgetData
  * }>}
  * */
 export async function budgetGetFixedValues() {
   try {
     const item = dbGetItem({ name: 'BUDGET', id: ID });
-    /** @type {Array<BudgetValueItem>} */
-    const values = item.data.values;
+    /** @type {BudgetData} */
+    const data = item.data;
 
     return {
       ok: true,
       reason: null,
-      data: values,
+      data,
     };
   }
   catch (err) {
     return {
       ok: false,
       reason: err,
-      data: [],
+      data: {
+        items: [],
+        income: 0.00,
+      },
     };
   }
 }
 
 /**
  * @param {Object} params
- * @param {Array<BudgetValueItem>} params.values
+ * @param {Object} params.payload
+ * @param {Array<BudgetItem>} params.payload.items
+ * @param {number} params.payload.income
  * @param {string} params.byUserId
  * @return {Promise<{
  *   ok: boolean
  *   reason: null|Error
- *   data: Array<BudgetValueItem>
+ *   data: BudgetData
  * }>}
  * */
 export async function budgetFixValues(params) {
   try {
-    const { values: inputValues, byUserId } = params;
+    const { payload, byUserId } = params;
     const item = dbCreate({
       name: 'BUDGET',
       id: ID,
-      data: { values: inputValues },
+      data: payload,
       userId: byUserId,
     });
-    /** @type {Array<BudgetValueItem>} */
-    const values = item.data.values;
+    /** @type {BudgetData} */
+    const data = item.data;
 
     return {
       ok: true,
       reason: null,
-      data: values,
+      data,
     };
   }
   catch (err) {
     return {
       ok: false,
       reason: err,
-      data: [],
+      data: {
+        items: [],
+        income: 0.00,
+      },
     };
   }
 }
