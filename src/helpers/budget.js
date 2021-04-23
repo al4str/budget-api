@@ -3,7 +3,7 @@ import { dbGetItems, dbGetItem, dbCreate } from '@/libs/db';
 /**
  * @typedef {Object} BudgetValueItem
  * @property {string} categoryId
- * @property {number} average
+ * @property {number} value
  * */
 
 const ID = 'FIXED';
@@ -49,7 +49,7 @@ export async function budgetGetAverageValues() {
 
         return {
           categoryId,
-          average: Number.isNaN(averageSum)
+          value: Number.isNaN(averageSum)
             ? 0.00
             : averageSum,
         };
