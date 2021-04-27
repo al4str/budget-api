@@ -1,5 +1,23 @@
 import { DB_SEED_USER_ID, dbCreate } from '@/libs/db';
 
+export const SEEDS_CATEGORY_BALANCE = {
+  id: 'balance',
+  title: 'Остаток на счету',
+  type: 'income',
+};
+
+export const SEEDS_CATEGORY_TRANSFER_MONEY_IN = {
+  id: 'transfer-money-in',
+  title: 'На карту',
+  type: 'income',
+};
+
+export const SEEDS_CATEGORY_TRANSFER_MONEY_OUT = {
+  id: 'transfer-money-out',
+  title: 'С карты',
+  type: 'expense',
+};
+
 export const SEEDS_CATEGORY_SALARY = {
   id: 'salary',
   title: 'Зарплата',
@@ -103,6 +121,9 @@ export const SEEDS_CATEGORY_UNEXPECTED = {
 };
 
 const CATEGORIES = [
+  SEEDS_CATEGORY_BALANCE,
+  SEEDS_CATEGORY_TRANSFER_MONEY_IN,
+  SEEDS_CATEGORY_TRANSFER_MONEY_OUT,
   SEEDS_CATEGORY_SALARY,
   SEEDS_CATEGORY_TIPS,
   SEEDS_CATEGORY_TINKOFF_INCOME,
